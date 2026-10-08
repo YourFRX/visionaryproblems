@@ -627,6 +627,16 @@ form .btn{width:100%;margin-top:4px;background:var(--copper-lit);color:var(--bla
   });
 
   var TO='hello@visionaryproblems.com';
+  /* Sends every signup to the FRX GoHighLevel account, which starts the nurture emails. */
+  function sendToCRM(nm,em,ph,source){
+    try{
+      var d=new URLSearchParams();
+      d.append('Full Name',nm); d.append('Work Email',em); d.append('Phone',ph||'');
+      d.append('Company Name',''); d.append('Source','Visionary Problems: '+source);
+      d.append('form_name','Visionary Problems: '+source);
+      fetch('https://services.leadconnectorhq.com/hooks/pigAFdAnSMwnFD3VQCwi/webhook-trigger/c5abca51-301d-4359-ab2c-ffe7295a5d64',{method:'POST',mode:'no-cors',body:d});
+    }catch(e){}
+  }
   function wire(formId,prefix,subject){
     var f=document.getElementById(formId);
     if(!f) return;
@@ -635,6 +645,7 @@ form .btn{width:100%;margin-top:4px;background:var(--copper-lit);color:var(--bla
       var g=function(id){var el=document.getElementById(id);return el?el.value.trim():'';};
       var nm=g(prefix+'nm'), em=g(prefix+'em'), ph=g(prefix+'ph');
       if(!nm||!em){alert('Add your name and email so we can send it.');return;}
+      sendToCRM(nm,em,ph,subject);
       var body='Name: '+nm+'\n'+'Email: '+em+'\n'+'Phone: '+ph+'\n'+'Source: '+subject+'\n';
       window.location.href='mailto:'+TO+'?subject='+encodeURIComponent(subject+': '+nm)+'&body='+encodeURIComponent(body);
       location.hash='#/confirmed';
@@ -647,6 +658,7 @@ form .btn{width:100%;margin-top:4px;background:var(--copper-lit);color:var(--bla
       ev.preventDefault();
       var nm=document.getElementById('p_nm').value.trim(), em=document.getElementById('p_em').value.trim();
       if(!nm||!em){alert('Add your name and email to download the guide.');return;}
+      sendToCRM(nm,em,'','CEO guide download');
       var a=document.createElement('a'); a.href='/ceo-guide.pdf'; a.setAttribute('download','Visionary-Problems-CEO-Guide.pdf');
       document.body.appendChild(a); a.click(); a.remove();
       var b=f.querySelector('button[type=submit]'); if(b){b.textContent='Downloading...';setTimeout(function(){b.textContent='Download the guide';},4000);}
